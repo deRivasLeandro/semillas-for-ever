@@ -18,20 +18,6 @@ abstract class Planta(open var altura: Double, open val anioSemilla: Int) {
 
     abstract fun esIdeal(parcela: Parcela) : Boolean
 
-    fun seAsociaBien(parcela: Parcela): Boolean {
-        var resultado = false
-        if(parcela.esEcologica) {
-            if(!parcela.tieneComplicaciones() and this.esIdeal(parcela)) {
-                resultado = true
-            }
-        }
-        else if(!parcela.esEcologica) {
-            if((parcela.cantidadMaximaDePlantas() <= 2) and this.esFuerte()) {
-                resultado = true
-            }
-        }
-        return resultado
-    }
 }
 
 open class Menta(override var altura: Double, override val anioSemilla: Int) : Planta(altura, anioSemilla) {
@@ -41,7 +27,7 @@ open class Menta(override var altura: Double, override val anioSemilla: Int) : P
     }
 
     override fun daSemillas(): Boolean {
-        return super.daSemillas() or (altura > 0.4)
+        return super.daSemillas() xor (altura > 0.4)
     }
 
     override fun esIdeal(parcela: Parcela): Boolean {
@@ -68,7 +54,7 @@ open class Soja(override var altura: Double, override val anioSemilla: Int) : Pl
     }
 
     override fun daSemillas(): Boolean {
-        return super.daSemillas() or (anioSemilla > 2007) and (altura in 0.75..0.9)
+        return super.daSemillas() xor (anioSemilla > 2007) and (altura in 0.75..0.9)
     }
 
     override fun esIdeal(parcela : Parcela): Boolean {
@@ -92,7 +78,7 @@ class Quinoa(override var altura: Double, override val anioSemilla: Int, val esp
     }
 
     override fun daSemillas(): Boolean {
-        return super.daSemillas() or (anioSemilla in 2001..2008)
+        return super.daSemillas() xor (anioSemilla in 2001..2008)
     }
     override fun esIdeal(parcela: Parcela): Boolean {
         return parcela.plantas.any{p -> p.altura < 1.5}

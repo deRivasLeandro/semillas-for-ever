@@ -1,6 +1,5 @@
 package ar.edu.unahur.obj2.semillas
 
-import java.lang.Exception
 
 class Parcela(val ancho: Double, val largo: Double, val horasDeSolQueRecibe: Double, var esEcologica: Boolean) {
     val plantas = mutableListOf<Planta>()
@@ -15,7 +14,7 @@ class Parcela(val ancho: Double, val largo: Double, val horasDeSolQueRecibe: Dou
     }
 
     fun tieneComplicaciones(): Boolean {
-        return plantas.any{p -> p.horasAlSol() < horasDeSolQueRecibe}
+        return plantas.any{it.horasAlSol() < horasDeSolQueRecibe}
     }
 
     fun hayEspacio(): Boolean {
@@ -23,23 +22,26 @@ class Parcela(val ancho: Double, val largo: Double, val horasDeSolQueRecibe: Dou
     }
 
     fun plantarPlanta(planta: Planta) {
-        if (this.hayEspacio()) {
+        if (this.hayEspacio() and (this.horasDeSolQueRecibe <= (planta.horasAlSol() + 2)))  {
             plantas.add(planta)
         }
         else {
-            throw Exception("Se alcanzó el límite de plantas en la parcela.")
+            error("Se alcanzó el límite de plantas en la parcela o bien las plantas no toleran tanto sol.")
         }
     }
-    fun porcentajeDeBienAsociadas() : Double { return (this.plantas.count{p->p.seAsociaBien(this)}/this.plantas.size*100).toDouble() }
-}
-
-object Inta {
-    val parcelas = mutableSetOf<Parcela>()
-
-    fun promedioDePlantas() : Int {
-        return parcelas.sumBy{p -> p.plantas.size} / parcelas.size
+    fun seAsociaBien(planta: Planta): Boolean {
+        var resultado = false
+        if(this.esEcologica) {
+            if(!this.tieneComplicaciones() and planta.esIdeal(this)) {
+                resultado = true
+            }
+        }
+        else if((this.plantas.size <= 2) and planta.esFuerte()) {
+            resultado = true
+        }
+        return resultado
     }
-    fun masAutosustentable() : Double { return this.parcelas.filter{ p->p.plantas.size>4}.maxOf{ pl->pl.porcentajeDeBienAsociadas()} }
-
+    fun porcentajeDeBienAsociadas() = 1.0*plantas.count{seAsociaBien(it)} / maxOf(plantas.size,1)
 }
+
 
